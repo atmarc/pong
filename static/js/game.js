@@ -12,13 +12,17 @@ function logKey(e) {
         player1.Ypos += 20;
     }
 }
-
+var mouseDown = false;
 document.onmousemove = mouseMove;
+document.onmousedown = () => mouseDown = true;
+document.onmouseup = () => mouseDown = false;
 
 function mouseMove (e) {
     if (e.clientY - 50 > 10 && e.clientY + 50 < 590) {
-        player1.Ypos = e.clientY - 50;
-        player2.Ypos = e.clientY - 50;
+        if (mouseDown) {
+            player1.Ypos = e.clientY - 50;
+            player2.Ypos = e.clientY - 50;
+        }
     }
 }
 
