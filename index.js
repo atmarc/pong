@@ -10,6 +10,13 @@ app.use(bodyParser.urlencoded({
     extended: true
 }))
 
+// CORS 
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/static/index.html')
 })
@@ -17,7 +24,10 @@ app.get('/', (req, res) => {
 app.get('/login', (req, res) => {
     res.sendFile(__dirname + '/static/html/login.html')
 })
-
+app.post('/missatge', (req, res) => {
+    console.log(req.body.data)
+    res.sendStatus(200)
+})
 app.get('/*', (req, res) => {
     res.redirect('/')
 })
