@@ -2,7 +2,7 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 
-// canvas.requestFullscreen();
+canvas.requestFullscreen();
 
 if (window.innerHeight < 600) {
     canvas.height = window.innerHeight;
@@ -61,6 +61,7 @@ var player2 = {
     height: 100 * unitY,
     width: 20 * unitX
 }
+
 var ball = {
     Xpos: 500 * unitX,
     Ypos: 300 * unitY,
@@ -69,39 +70,18 @@ var ball = {
     show: true
 }
 
+var rand = Math.random();
+var direction = {x: rand, y: 1 - rand};
 
-function reset () {
-    ball.Xpos = 500 * unitX;
-    ball.Ypos = 300 * unitY;
-    
-    player1.Xpos = 50 * unitX;
-    player1.Ypos = 250 * unitY;
-    
-    player2.Xpos = 930 * unitX;
-    player2.Ypos = 250 * unitY;
+var sentit = Math.random();
+if (sentit < 0.25) direction.x *= -1;
+if (sentit > 0.25 && sentit < 0.5) direction.y *= -1;
+if (sentit > 0.5 && sentit < 0.75) { 
+    direction.y *= -1; 
+    direction.x *= -1;
 }
-
-
-function randomDireccio () {
-    rand = Math.random();
-    direction = {x: rand, y: 1 - rand};
-    if (direction.x < 0.25) direction.x += 0.25;
-    console.log(direction.x);
-    sentit = Math.random();
-    if (sentit < 0.25) direction.x *= -1;
-    if (sentit > 0.25 && sentit < 0.5) direction.y *= -1;
-    if (sentit > 0.5 && sentit < 0.75) { 
-        direction.y *= -1; 
-        direction.x *= -1;
-    }
-}
-
-var rand, direction, sentit;
-randomDireccio();
 
 var frameNo = 0;
-var marcador1 = 0;
-var marcador2 = 0;
 
 function update () {
     frameNo += 1;
@@ -116,7 +96,6 @@ function update () {
     moveBall();
     checkColisionWall();    
     checkColisionPlayer();
-    checkGoal();
 
     if (ball.show) {
         ctx.fillStyle = "white";
@@ -125,15 +104,10 @@ function update () {
     else
         ctx.fillStyle = "red";
 
-    ctx.beginPath();
-    ctx.arc(ball.Xpos, ball.Ypos, ball.radius, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.stroke();
-
-
-    ctx.font = "30px Arial";
-    ctx.fillText("Score: " + marcador1, 50 * unitX, 50 * unitY);
-    ctx.fillText("Score: " + marcador2, 870 * unitX, 50 * unitY);
+        ctx.beginPath();
+        ctx.arc(ball.Xpos, ball.Ypos, ball.radius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
 }
 
 function moveBall () {
@@ -162,22 +136,6 @@ function checkColisionPlayer () {
             direction.x *= -1;
         }
     }    
-}
-
-function checkGoal () {
-    if (ball.Xpos >= canvas.width) {
-        reset();
-        ++marcador1;
-        console.log(marcador1 + " " + marcador2);
-        randomDireccio();
-
-    } 
-    else if (ball.Xpos <= 0) {
-        reset();
-        ++marcador2;
-        randomDireccio();
-        console.log(marcador1 + " " + marcador2);
-    }
 }
 
 function everyinterval(n) {
