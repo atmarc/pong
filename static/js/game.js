@@ -42,12 +42,18 @@ function touchMove (e) {
     }
 }
 
+function onClick (e) {
+    if (startGameText) startGameText = false;
+}
+
 if (isMobile) {
     document.ontouchmove = touchMove;
 }
 else {
     document.onmousemove = mouseMove;
 }
+
+document.onclick = onClick;
 
 var player1 = {
     Xpos: 50 * unitX,
@@ -65,7 +71,7 @@ var ball = {
     Xpos: 500 * unitX,
     Ypos: 300 * unitY,
     radius: 15 * unitX,
-    speed: 10 * unitX,
+    speed: {x:10 * unitX, y: 10 * unitY},
     show: true
 }
 
@@ -85,8 +91,10 @@ function reset () {
 function randomDireccio () {
     rand = Math.random();
     direction = {x: rand, y: 1 - rand};
-    if (direction.x < 0.25) direction.x += 0.25;
-    console.log(direction.x);
+
+    if (direction.x < 0.5) direction.x += 0.5;
+    if (direction.y < 0.25) direction.y += 0.25;
+    
     sentit = Math.random();
     if (sentit < 0.25) direction.x *= -1;
     if (sentit > 0.25 && sentit < 0.5) direction.y *= -1;
@@ -102,6 +110,7 @@ randomDireccio();
 var frameNo = 0;
 var marcador1 = 0;
 var marcador2 = 0;
+var startGameText = false;
 
 function update () {
     frameNo += 1;
@@ -113,32 +122,41 @@ function update () {
     ctx.fillRect(player1.Xpos, player1.Ypos, player1.width, player1.height);
     ctx.fillRect(player2.Xpos, player2.Ypos, player2.width, player2.height);
     
-    moveBall();
-    checkColisionWall();    
-    checkColisionPlayer();
-    checkGoal();
-
     if (ball.show) {
         ctx.fillStyle = "white";
         ctx.strokeStyle = "white";
     }
     else
-        ctx.fillStyle = "red";
+    ctx.fillStyle = "red";
+    
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";    
 
+    if (startGameText) {
+        ctx.fillText("Click to play", 500 * unitX, 300 * unitY);
+    }
+    else {
+        moveBall();
+        checkColisionWall();    
+        checkColisionPlayer();
+        checkGoal();
+        drawBall();
+    }
+
+    ctx.fillText("Score: " + marcador1, 70 * unitX, 50 * unitY);
+    ctx.fillText("Score: " + marcador2, 930 * unitX, 50 * unitY);
+}
+
+function drawBall () {
     ctx.beginPath();
     ctx.arc(ball.Xpos, ball.Ypos, ball.radius, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
-
-
-    ctx.font = "30px Arial";
-    ctx.fillText("Score: " + marcador1, 50 * unitX, 50 * unitY);
-    ctx.fillText("Score: " + marcador2, 870 * unitX, 50 * unitY);
 }
 
 function moveBall () {
-    ball.Xpos += ball.speed * direction.x
-    ball.Ypos += ball.speed * direction.y
+    ball.Xpos += ball.speed.x * direction.x
+    ball.Ypos += ball.speed.y * direction.y
 }
 
 function checkColisionWall () {
@@ -168,15 +186,14 @@ function checkGoal () {
     if (ball.Xpos >= canvas.width) {
         reset();
         ++marcador1;
-        console.log(marcador1 + " " + marcador2);
         randomDireccio();
-
+        startGameText = true;
     } 
     else if (ball.Xpos <= 0) {
         reset();
         ++marcador2;
+        startGameText = true;
         randomDireccio();
-        console.log(marcador1 + " " + marcador2);
     }
 }
 
